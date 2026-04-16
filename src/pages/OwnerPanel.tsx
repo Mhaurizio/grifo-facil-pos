@@ -1,14 +1,17 @@
 import { usePOS } from '@/context/POSContext';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(price);
 
 const OwnerPanel = () => {
-  const { sales, orders, tables, webhookUrl, setWebhookUrl, user } = usePOS();
+  const { sales, orders, tables, webhookUrl, setWebhookUrl, user, waiters, setWaiters } = usePOS();
   const navigate = useNavigate();
   const [showConfig, setShowConfig] = useState(false);
+  const [showWaiters, setShowWaiters] = useState(false);
+  const [editWaiters, setEditWaiters] = useState<string[]>([]);
+  const [newWaiter, setNewWaiter] = useState('');
 
   const todaySales = sales.filter(s => {
     const d = new Date(s.timestamp);
@@ -68,6 +71,7 @@ const OwnerPanel = () => {
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Acciones rápidas</h2>
         {[
           { label: 'Ver mesas', icon: '🪑', action: () => navigate('/tables') },
+          { label: 'Gestionar meseros', icon: '👥', action: () => { setEditWaiters([...waiters]); setShowWaiters(true); } },
           { label: 'Configurar webhook', icon: '⚙️', action: () => setShowConfig(true) },
         ].map(link => (
           <button
@@ -117,6 +121,64 @@ const OwnerPanel = () => {
               </p>
             </div>
             <button onClick={() => setShowConfig(false)} className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-medium">
+              Guardar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Waiters modal */}
+      {showWaiters && (
+        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-end">
+          <div className="w-full bg-card rounded-t-2xl p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+            <h3 className="text-lg font-bold text-card-foreground">Gestionar meseros</h3>
+            <div className="space-y-2">
+              {editWaiters.map((w, i) => (
+                <div key={i} className="flex gap-2 items-center">
+                  <input
+                    value={w}
+                    onChange={e => {
+                      const updated = [...editWaiters];
+                      updated[i] = e.target.value;
+                      setEditWaiters(updated);
+                    }}
+                    className="flex-1 bg-secondary text-secondary-foreground rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary"
+                  />
+                  <button
+                    onClick={() => setEditWaiters(editWaiters.filter((_, j) => j !== i))}
+                    className="text-destructive px-3 py-3 rounded-lg bg-secondary text-sm font-medium"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <input
+                value={newWaiter}
+                onChange={e => setNewWaiter(e.target.value)}
+                placeholder="Nuevo mesero..."
+                className="flex-1 bg-secondary text-secondary-foreground rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary"
+              />
+              <button
+                onClick={() => {
+                  if (newWaiter.trim()) {
+                    setEditWaiters([...editWaiters, newWaiter.trim()]);
+                    setNewWaiter('');
+                  }
+                }}
+                className="px-4 py-3 rounded-lg bg-secondary text-secondary-foreground text-sm font-medium"
+              >
+                +
+              </button>
+            </div>
+            <button
+              onClick={() => {
+                setWaiters(editWaiters.filter(w => w.trim()));
+                setShowWaiters(false);
+              }}
+              className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-medium"
+            >
               Guardar
             </button>
           </div>

@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { User, TableInfo, Order, OrderItem, MenuItem, DEFAULT_MENU, SaleRecord } from '@/types/pos';
 
+const DEFAULT_WAITERS = ['Carlos', 'María', 'Andrés', 'Laura', 'Jorge', 'Valentina'];
+
 interface POSContextType {
   user: User | null;
   setUser: (user: User | null) => void;
@@ -19,6 +21,8 @@ interface POSContextType {
   sales: SaleRecord[];
   webhookUrl: string;
   setWebhookUrl: (url: string) => void;
+  waiters: string[];
+  setWaiters: (waiters: string[]) => void;
 }
 
 const POSContext = createContext<POSContextType | null>(null);
@@ -43,6 +47,7 @@ export const POSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [orders, setOrders] = useState<Order[]>([]);
   const [sales, setSales] = useState<SaleRecord[]>([]);
   const [webhookUrl, setWebhookUrl] = useState('');
+  const [waiters, setWaiters] = useState<string[]>(DEFAULT_WAITERS);
   const menu = DEFAULT_MENU;
 
   const addItem = useCallback((item: MenuItem) => {
@@ -160,7 +165,7 @@ export const POSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     <POSContext.Provider value={{
       user, setUser, tables, menu, currentOrder, selectedTable, setSelectedTable,
       addItem, removeItem, setItemNote, sendToKitchen, closeBill, clearCurrentOrder,
-      orders, sales, webhookUrl, setWebhookUrl,
+      orders, sales, webhookUrl, setWebhookUrl, waiters, setWaiters,
     }}>
       {children}
     </POSContext.Provider>
