@@ -22,7 +22,7 @@ const LoginScreen = () => {
       <div className="w-full max-w-sm space-y-8">
         <div className="text-center space-y-2">
           <div className="text-5xl mb-4">🍽️</div>
-          <h1 className="text-2xl font-bold text-foreground">POS Restaurante</h1>
+          <h1 className="text-2xl font-bold text-foreground">POS Coyote Crazy</h1>
           <p className="text-muted-foreground text-sm">Selecciona tu nombre y rol para continuar</p>
         </div>
 
