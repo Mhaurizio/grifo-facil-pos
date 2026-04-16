@@ -3,10 +3,8 @@ import { usePOS } from '@/context/POSContext';
 import { Role } from '@/types/pos';
 import { useNavigate } from 'react-router-dom';
 
-const WAITERS = ['Carlos', 'María', 'Andrés', 'Laura', 'Jorge', 'Valentina'];
-
 const LoginScreen = () => {
-  const { setUser } = usePOS();
+  const { setUser, waiters } = usePOS();
   const navigate = useNavigate();
   const [name, setName] = useState('');
   const [role, setRole] = useState<Role>('mesero');
@@ -30,7 +28,7 @@ const LoginScreen = () => {
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground">Nombre</label>
             <div className="grid grid-cols-3 gap-2">
-              {WAITERS.map(w => (
+              {waiters.map(w => (
                 <button
                   key={w}
                   onClick={() => setName(w)}
